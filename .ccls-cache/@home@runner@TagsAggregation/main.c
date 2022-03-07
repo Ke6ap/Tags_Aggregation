@@ -56,20 +56,16 @@ struct node* insertParentLeft(struct node* root,struct node* subParent){
   return root->left;
 }
 
-/*fdsfsdfsd*/
-void tags_alignment(int argc, int max, char tags[argc][max]){
-
-  for(int i =0; i<argc; i++){
-    int tag_length = strlen(tags[i]);
-    if(tag_length < max){
-      for (int j = (max - tag_length) + 1; j < max; ++j){
-        tags[i][j] = '#';
-        }
+/* Hamming distance */
+int hammingDistance(char str1[], char str2[]){
+    int i = 0, count = 0;
+  
+    while(str1[i]!='\0'){
+        if (str1[i] != str2[i])
+            count++;
+        i++;
     }
-  }
-
-  return;
-    // printf("%s iter: %d\n",tags_table[i-1],i);
+    return count;
 }
 
 int main(int argc, char **argv) {
@@ -87,22 +83,25 @@ int main(int argc, char **argv) {
      maximum_tag_length + 1 because we will add '\0' to declare end of the string   
   */
   char tags_table[argc-1][(int)maximum_tag_length+1];
-  
+
+  /* initialize aaray with # and add null terminator to finish the string */
   for (int i = 0; i < argc-1; ++i){
     for(int j=0;j<(int)maximum_tag_length;++j){
       tags_table[i][j] = '_';
     }
+    
+    //insert string terminating character 
     tags_table[i][(int)maximum_tag_length] = '\0';
   }
-  
+
+  /* change # with the aactual string characters */
   for (int i = 0; i < argc-1; ++i){
-    //strcpy(tags_table[i],argv[i+1]);
     for (int j =0; j <(int)strlen(argv[i+1]);++j){
       tags_table[i][j] = argv[i+1][j];
     }
   }
 
-  /* Array print
+
   for (int i =0; i < argc-1; i++){
     for(int j=0;j<(int)maximum_tag_length;++j){
       printf("%c",tags_table[i][j]);
@@ -110,7 +109,33 @@ int main(int argc, char **argv) {
     printf("\n");
     printf("[%d]: %s\n",i+1,tags_table[i]);
   }
-  */
+
+  //initial dif array
+  int differences[argc-1][argc-1];
+  memset( differences, 0, sizeof(differences));
+
+  for (int i =0; i < argc-1; i++){
+    for(int j=i+1;j<argc-1;++j){
+      differences[i][j] = hammingDistance(tags_table[i],tags_table[j]);
+    }
+  }
+
+  /* Fidning minimum value */
+  int minVal = 99999;
+  int minRow = -1;
+  int minCol = -1;
+
+  for (int i =0; i < argc-1; i++){
+    for(int j=i+1;j<argc-1;++j){
+      if (differences[i][j] < minVal){
+        minVal = differences[i][j];
+        minRow = i;
+        minCol = j;
+      }
+    }
+
+    
+  }
   
   
   
@@ -119,6 +144,6 @@ int main(int argc, char **argv) {
   insertRight(s_3,"rrrrrr");
   struct node* s_4 = createParentNode(2);
   insertParentRight(s_4,s_3);
-  printf("%d",s_4->right->id);
+  printf("\n%d",s_4->right->id);
   return 0;
 }

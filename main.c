@@ -57,8 +57,7 @@ struct node* insertParentLeft(struct node* root,struct node* subParent){
 }
 
 /* Hamming distance */
-int hammingDistance(char str1[], char str2[])
-{
+int hammingDistance(char str1[], char str2[]){
     int i = 0, count = 0;
   
     while(str1[i]!='\0'){
@@ -110,9 +109,33 @@ int main(int argc, char **argv) {
     printf("\n");
     printf("[%d]: %s\n",i+1,tags_table[i]);
   }
-  
 
-  printf("%d",hammingDistance(tags_table[0],tags_table[1]));
+  //initial dif array
+  int differences[argc-1][argc-1];
+  memset( differences, 0, sizeof(differences));
+
+  for (int i =0; i < argc-1; i++){
+    for(int j=i+1;j<argc-1;++j){
+      differences[i][j] = hammingDistance(tags_table[i],tags_table[j]);
+    }
+  }
+
+  /* Fidning minimum value */
+  int minVal = 99999;
+  int minRow = -1;
+  int minCol = -1;
+
+  for (int i =0; i < argc-1; i++){
+    for(int j=i+1;j<argc-1;++j){
+      if (differences[i][j] < minVal){
+        minVal = differences[i][j];
+        minRow = i;
+        minCol = j;
+      }
+    }
+
+    
+  }
   
   
   
