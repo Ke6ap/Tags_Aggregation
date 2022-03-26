@@ -4,8 +4,6 @@
 
 /* Tree struct */
 struct node{
-  // id is only for the parent nodes to map them in the 2d array 
-  int id;
   // tags of the sensor (leaf)
   char *tags;
   struct node *left;
@@ -13,9 +11,8 @@ struct node{
 };
 
 /* Create leaf node with its tags and irelevant id */
-struct node* createLeafNode(char *tags) {
+struct node* createNode(char *tags) {
   struct node* newNode = malloc(sizeof(struct node));
-  newNode->id = -1;
   newNode->tags = tags;
   newNode->left = NULL;
   newNode->right = NULL;
@@ -23,26 +20,26 @@ struct node* createLeafNode(char *tags) {
   return newNode;
 }
 
-/* Create parent node with no tags and its id which maps it to the superset array */
-struct node* createParentNode(int id) {
-  struct node* newNode = malloc(sizeof(struct node));
-  newNode->id = id;
-  newNode->tags = NULL;
-  newNode->left = NULL;
-  newNode->right = NULL;
+// /* Create parent node with no tags and its id which maps it to the superset array */
+// struct node* createParentNode(int id) {
+//   struct node* newNode = malloc(sizeof(struct node));
+//   newNode->id = id;
+//   newNode->tags = NULL;
+//   newNode->left = NULL;
+//   newNode->right = NULL;
 
-  return newNode;
-}
+//   return newNode;
+// }
 
 /* Tree insertion functions */
 
 struct node* insertLeft(struct node* root, char *tags) {
-  root->left = createLeafNode(tags);
+  root->left = createNode(tags);
   return root->left;
 }
 
 struct node* insertRight(struct node* root, char *tags) {
-  root->right =  createLeafNode(tags);
+  root->right =  createNode(tags);
   return root->right;
 }
 
@@ -67,6 +64,109 @@ int hammingDistance(char str1[], char str2[]){
     }
     return count;
 }
+
+/* tags union */
+char *findUnion(char str1[], char str2[]) {
+
+    int f, p = 0;
+    int i, j;
+
+    //char *str3;
+   char *str3 = (char*) malloc(12*sizeof(char));
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+
+    while (str1[p] != '\0') {
+        str3[p] = str1[p];
+        p++;
+    }
+
+    int start = 0;
+
+    for (i = 0; i < len2; i++) {
+        f = 0;
+
+        for (j = 0; j < len1; j++) {
+             if (str2[i] == str1[j]) {
+                f = 1;
+            } 
+        }
+        if (f == 0) {
+            str3[p] = str2[i];
+            p++;
+        }
+    }
+    str3[p] = '\0';
+    //printf("Union of two strings:%s", str3);
+    return str3;
+}
+
+
+/*string union*/
+char *combination(char *str_1, char *str_2){
+  char *final_str;
+  final_str = (char*)malloc ((strlen(str_1)+strlen(str_2)+1) * sizeof (char));
+  
+  int i,j;
+  for(i=0;i<strlen(str_1);i++){
+    final_str[i] = str_1[i];
+  }
+  
+  int index = i;
+  int k=0;
+  int prev=0;
+
+  char word[2000];
+  final_str[index] = ' ';
+  index++;
+  printf("%s\n",final_str);
+  
+  char *token = strtok(str_2," ");
+
+  while(token != NULL){
+    //printf( "%s\n", token );
+    int b = strstr(final_str,token) == NULL;
+    if (b){
+        /*str foung oh my god*/
+      for (i=0;i<strlen(token);i++){
+        final_str[index] = token[i];
+        index++;
+      }
+      final_str[index] = ' ';
+      index++;
+    }
+    //printf( " %d\n", b );
+    token = strtok(NULL, " ");
+  }
+
+  final_str[index] = '\0';
+  //printf("\nfinal_str: %s",final_str);
+  return final_str;
+}
+
+/* character triming */
+char *trim(char *str,char ch){
+  int len = strlen(str);
+  int i,j;
+  	   	
+    for(i = 0; i < len; i++){
+  		if(str[i] == ch)
+  		{
+  			for(j = i; j < len; j++)
+  			{
+  				str[j] = str[j + 1];
+  			}
+  			len--;
+  			i--;	
+  		} 
+  	}	
+
+  return str;
+}
+
+/*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 
 int main(int argc, char **argv) {
 
@@ -124,26 +224,47 @@ int main(int argc, char **argv) {
   int minVal = 99999;
   int minRow = -1;
   int minCol = -1;
+  int table_size = argc-1;
 
-  for (int i =0; i < argc-1; i++){
-    for(int j=i+1;j<argc-1;++j){
-      if (differences[i][j] < minVal){
-        minVal = differences[i][j];
-        minRow = i;
-        minCol = j;
+  /* Tree root */
+  struct node* root = createNode("");
+
+  while(table_size != 1){
+    
+    for (int i =0; i < argc-1; i++){
+      for(int j=i+1;j<argc-1;++j){
+        if (differences[i][j] < minVal){
+          minVal = differences[i][j];
+          minRow = i;
+          minCol = j;
+        }
       }
     }
 
+    char* first_tag_string = strdup(tags_table[minCol]);
+    char* second_tag_string = strdup(tags_table[minRow]);
+
+    char *aggregated_tags = trim(findUnion(first_tag_string,second_tag_string),'_');
+
+    /*
+      edw tha ftiaxw ta nodes me ta tags tous
+    */
+
+  //printf("----%s----\n",aggregated_tags);
+
     
+
+    
+    table_size--;
   }
   
   
   
-  struct node* s_3 = createParentNode(1);
-  insertLeft(s_3,"tagssss");
-  insertRight(s_3,"rrrrrr");
-  struct node* s_4 = createParentNode(2);
-  insertParentRight(s_4,s_3);
-  printf("\n%d",s_4->right->id);
+  // struct node* s_3 = createParentNode(1);
+  // insertLeft(s_3,"tagssss");
+  // insertRight(s_3,"rrrrrr");
+  // struct node* s_4 = createParentNode(2);
+  // insertParentRight(s_4,s_3);
+  // printf("\n%d",s_4->right->id);
   return 0;
 }
