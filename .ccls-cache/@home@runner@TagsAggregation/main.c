@@ -4,13 +4,12 @@
 
 /*------------------------------------Tree-------------------------------------- */
 struct node{
-  // tags of the sensor (leaf) and superset tags parent
   char *tags;
   struct node *left;
   struct node *right;
 };
 
-/* Create leaf node with its tags and irelevant id */
+/* create new node */
 struct node* createNode(char *tags) {
   struct node* newNode = malloc(sizeof(struct node));
   newNode->tags = tags;
@@ -20,7 +19,7 @@ struct node* createNode(char *tags) {
   return newNode;
 }
 
-/* Tree insertion functions */
+/* Tree insertion functions for simple nodes */
 struct node* insertLeft(struct node* root, char *tags) {
   root->left = createNode(tags);
   return root->left;
@@ -31,6 +30,7 @@ struct node* insertRight(struct node* root, char *tags) {
   return root->right;
 }
 
+/* Functions to insert a whole subtree on the left or right of the root */
 struct node* insertParentRight(struct node* root,struct node* subParent){
   root->right = subParent;
   return root->right;
@@ -45,78 +45,67 @@ int search(struct node* node, char *key){
     if (node == NULL)
         return 0;
  
-    /* first recur on left child */
     search(node->left,key);
- 
-    /* then print the data of node */
-    //printf("%s \n", node->tags);
+  
+    //found the key
     if (!strcmp(node->tags,key)){
       return 1;
     }
- 
-    /* now recur on right child */
+  
     search(node->right,key);
 
     return 0;
 }
 
-int heightoftree(struct node *root)
-{
+/* Used in level traversal */
+int heightoftree(struct node *root){
     int max;
+  
     if (root!=NULL)
     {
         /* Finding the height of left subtree. */
         int leftsubtree = heightoftree(root->left);
         /* Finding the height of right subtree. */
         int rightsubtree = heightoftree(root->right);
-        if (leftsubtree > rightsubtree)
-        {
+      
+        if (leftsubtree > rightsubtree){
             max = leftsubtree + 1;
             return max;
         }
-        else
-        {
+        else{
             max = rightsubtree + 1;
             return max;
         }
     }
 }
-/*
- * Function to print all the nodes left to right of the current level
- */
-void currentlevel(struct node *root, int level)
-{
-    if (root != NULL) 
-    {
-        if (level == 1)
-        {
-            printf("%s |", root->tags);
-        }
-        else if (level > 1) 
-        { 
-            currentlevel(root->left, level-1); 
-            currentlevel(root->right, level-1);
-        }			
+/* Function to print all the nodes left to right of the current level */
+void currentlevel(struct node *root, int level){
+    
+  if (root != NULL) {
+    if (level == 1){
+        printf("%s |", root->tags);
     }
+    else if (level > 1){ 
+        currentlevel(root->left, level-1); 
+        currentlevel(root->right, level-1);
+    }			
+  }
 }
 
-
-/*--------------------------------List------------------------------------------------------*/
+/*------------------------------------List-------------------------------------- */
 
 struct list_node{
   int id;
-  int has_children_in_tree;
   char *tags;
   struct list_node *next;
 };
 
-void insertAtBeginning(struct list_node** head_ref, int id, char *tags,int has_children) {
+void insertAtBeginning(struct list_node** head_ref, int id, char *tags) {
   // Allocate memory to a node
   struct list_node* new_node = (struct list_node*)malloc(sizeof(struct list_node));
 
   // insert the data
   new_node->id = id;
-  new_node->has_children_in_tree = has_children;
   new_node->tags = strdup(tags);
 
   new_node->next = (*head_ref);
@@ -148,12 +137,11 @@ void deleteNode(struct list_node** head_ref, int key) {
   free(temp);
 }
 
-void insertAtEnd(struct list_node** head_ref, int id, char tags[],int has_children) {
+void insertAtEnd(struct list_node** head_ref, int id, char tags[]) {
   struct list_node* new_node = (struct list_node*)malloc(sizeof(struct list_node));
   struct list_node* last = *head_ref; /* used in step 5*/
 
   new_node->id = id;
-  new_node->has_children_in_tree = has_children;
   new_node->tags = strdup(tags);
   
   new_node->next = NULL;
@@ -176,7 +164,7 @@ void printList(struct list_node* node) {
   }
 }
 
-/*------------------------------------------------------------------------------------------*/
+/*------------------------------------END-------------------------------------- */
 
 /* Hamming distance */
 int hammingDistance(char str1[], char str2[]){
@@ -239,12 +227,13 @@ char *combination(char *str_1, char *str_2){
 
 /* character triming */
 char *trim(char *str,char ch){
+  
   int len = strlen(str);
   int i,j;
   	   	
     for(i = 0; i < len; i++){
-  		if(str[i] == ch)
-  		{
+  		
+      if(str[i] == ch){
   			for(j = i; j < len; j++)
   			{
   				str[j] = str[j + 1];
@@ -311,9 +300,9 @@ int main(int argc, char **argv) {
       tags_table[i][j] = argv[i+1][j];
     }
     if ( i==0 ){
-      insertAtBeginning(&head,i,tags_table[i],0); 
+      insertAtBeginning(&head,i,tags_table[i]); 
     }else{
-      insertAtEnd(&head,i,tags_table[i],0);
+      insertAtEnd(&head,i,tags_table[i]);
     }
   }
 
@@ -367,19 +356,13 @@ int main(int argc, char **argv) {
 
     //printf("minclo/row val:%d %d %.f\n",minCol,minRow,minVal);
 
-    /* values to see if a string will have children */
-    int first_has_children;
-    int second_has_children;
-
     //copy nearest couple tags
     while(temp != NULL){
       if(temp->id == minRow){
         first_tag_string = strdup(temp->tags);
-        first_has_children = temp->has_children_in_tree;
       }
       if(temp->id == minCol){
         second_tag_string = strdup(temp->tags);
-        second_has_children = temp->has_children_in_tree;
       }
       temp = temp->next;
     }
@@ -387,37 +370,29 @@ int main(int argc, char **argv) {
                       /* helper prints */
     // printf("i am the first string %s\n",first_tag_string);
     // printf("i am the second string %s\n",second_tag_string);
+
+    //keep a copy of the second string because it's getting deformed by the combination function
     char *temp_second_tag_string = strdup(second_tag_string);
     temp_second_tag_string = trim(temp_second_tag_string,'_');
 
-    //combination of the couple tags
+    //sundiasmos twn min couple tags
     char *aggregated_tags = combination(trim(first_tag_string,'_'),trim(second_tag_string,'_'));
     // printf("i am the second string after comb %s\n",temp_second_string);
     // printf("i am the first string afeter comb %s\n",first_tag_string);
 
-    //na dw ta trees
+    //to node poy tha einai o pateras tou zeugariou
     struct node* parent_of_childs = createNode(aggregated_tags);
 
+                      /*Tree formation*/
     if(tree_head == NULL){
         insertRight(parent_of_childs,first_tag_string);
         //printf("%s |",parent_of_childs->right->tags);
         insertLeft(parent_of_childs,temp_second_tag_string);
         //printf("%s \n",parent_of_childs->left->tags);
-        //printf("i am the second string %s\n",second_tag_string);
         tree_head = parent_of_childs;
     }else if(search(tree_head,first_tag_string)){
-      //an to head->id einai == mincol h minrow shmainei oti to ena paidi tou dentrou tha einai to ypodentro alliws tha einai ena kainouyrgio zeugari
-      // if(first_has_children && second_has_children){
-      //   insertParentLeft(parent_of_childs,)
-      //   // insertParentRight(parent_of_childs,tree_head);
-      //   // insertLeft(parent_of_childs,second_tag_string);
-      //   // tree_head = parent_of_childs; 
-      // }else{
-        
-      // }
-      //struct node* parent_of_childs = createNode(aggregated_tags);
-
       /* An einai to first string anagkastika den einai to deytero opote to dhmiourgoume kai to bazoume aristera enw vazoume to upoloipo dentro dexia */
+      
       insertLeft(parent_of_childs,temp_second_tag_string);
       //printf("%s | ",parent_of_childs->left->tags);
       insertParentRight(parent_of_childs,tree_head);
@@ -432,7 +407,8 @@ int main(int argc, char **argv) {
       //printf("%s \n",parent_of_childs->right->tags);
       tree_head = parent_of_childs;
     }else{
-      //printf("\n\n Special case \n\n");
+      
+      /* An den einai kanena apo ta 2 strings eidh sto dentro tote dimourgoume 2 kainourgia nodes ta bazoume se ena ypodentro kai to prosartoume sto arxiko mas dentro*/
       insertLeft(parent_of_childs,temp_second_tag_string);
       //printf("%s |",parent_of_childs->left->tags);
       insertRight(parent_of_childs,first_tag_string);
@@ -446,7 +422,9 @@ int main(int argc, char **argv) {
       
       char *super_aggregated_tags = combination(trim(parent_of_childs->tags,'_'),trim(tree_head->tags,'_'));
 
+      //epanaorizoume to pleon xalasmeno string me auto poy htan sthn arxh
       tree_head->tags = temp_head_tag_string;
+      
       super_parent_of_childs = createNode(super_aggregated_tags);
       //printf("\nsuper %s\n",super_parent_of_childs->tags);
 
@@ -457,9 +435,10 @@ int main(int argc, char **argv) {
       tree_head = super_parent_of_childs;
     }
 
+    /* Sbinoume ta min nodes apo th lista kai ths prosthetoume to neo node poy einai sundiasmos twn allwn */
     deleteNode(&head, minCol);
     deleteNode(&head, minRow);
-    insertAtBeginning(&head,4,aggregated_tags,1);
+    insertAtBeginning(&head,4,aggregated_tags);
     //printf("\n agg: %s\n",head->tags);
 
     temp = head;
@@ -477,16 +456,15 @@ int main(int argc, char **argv) {
     // printList(head);
     // printf("\n");
 
-    //re-initialize to zero for the next iteration
+    //epanarxikopoihsh se 0 gia na broume tis kainourgiew diafores
     memset( differences, 0, sizeof(differences));
 
-    //loop through the list elements to find new diff array
+    //prospelash ths listas gia na ypologisoume tis apostaseis olwn twn stoixeiwn ths metaxy tous
     temp = head;
     struct list_node* temp_2 = head;
     int i,j;
     i = 0;
     j = 0;
-
 
     //printf("\nUpdating distance table iteration %d:\n",table_size);
     while(temp != NULL){
@@ -517,28 +495,18 @@ int main(int argc, char **argv) {
     
     table_size--;
   }
+  
   //printInorder(tree_head);
-
   int height = heightoftree(tree_head);
-  for(int i = 1; i <= height; i++)      
-    {
+
+  //ektypwnoume to teliko dentro
+  for(int i = 1; i <= height; i++){
         printf("%d->",i);
         currentlevel(tree_head,i);
         printf("\n");
-    }
+  }
 
   return 0;
 }
 
-/* to problima einai oti meta to combinatino xanetai h plhroforia tou second_tag_string opote eipa na kanw ena copy to string kai afou ginei to affrefation na asxoloume me to copy toy 
-Den douleuei akoma enw den exw dei th periptwsh toy superparent h opoia den emfanizetai mallon logo twn paradeigmatwn axizei na ereunithei omws
-
-me to level order traversal douleuei isws na einai lathos ta epoxiaka prints poy exw stis periptwseis
-akoma 
-*/
-
-/* To problima me th mpourda poy kobei ta tags yparxei sto super kai prepei na kanw 2 copy gia ta aggregations gia na to ftiaxw
-
-sto ./a.out TEMP-HUM TEMP-HUM-CO2 RAIN-WEATHER RAIN-WEATHER-SUN SOMETHING-ELSE-IRRELEVANT-YES
-
-*/
+/* Average input test ./a.out TEMP-HUM TEMP-HUM-CO2 RAIN-WEATHER RAIN-WEATHER-SUN SOMETHING-ELSE-IRRELEVANT-YES*/
