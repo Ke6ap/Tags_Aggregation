@@ -295,6 +295,7 @@ int main(int argc, char **argv) {
   }
 
   /* change # with the aactual string characters */
+  /* ayto de tha xreiastei na xanaginei epeidh tropopoihsa to hamming distance na pianei th diafora twn strings se methethos kai na th prosthetei sto teliko count */
   for (int i = 0; i < argc-1; ++i){
     for (int j =0; j <(int)strlen(argv[i+1]);++j){
       tags_table[i][j] = argv[i+1][j];
@@ -335,7 +336,7 @@ int main(int argc, char **argv) {
   char* second_tag_string;
   struct list_node* temp = NULL;
 
-  
+  /* To table size antiprosopeuei ta stoixeia ths listas otan ftasoume sto 1 tha exoyme to teliko super_set twn stoixeiwn (legetai table_size giati abtistoixei kai sto megethos tou diff table) */
   while(table_size != 1){
 
     temp = head;
@@ -438,6 +439,7 @@ int main(int argc, char **argv) {
     /* Sbinoume ta min nodes apo th lista kai ths prosthetoume to neo node poy einai sundiasmos twn allwn */
     deleteNode(&head, minCol);
     deleteNode(&head, minRow);
+    //to 4 einai akyrh timh gia to id poy tha allaxei sto reset ids
     insertAtBeginning(&head,4,aggregated_tags);
     //printf("\n agg: %s\n",head->tags);
 
@@ -485,7 +487,7 @@ int main(int argc, char **argv) {
     }
 
 
-    /* Print distance table */
+                /* Print distance table */
     // for (i=0;i<table_size-1;i++){
     //   for(j=i;j<table_size-1;j++){
     //     printf("%.2f ",differences[i][j]);
@@ -509,4 +511,4 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-/* Average input test ./a.out TEMP-HUM TEMP-HUM-CO2 RAIN-WEATHER RAIN-WEATHER-SUN SOMETHING-ELSE-IRRELEVANT-YES*/
+/* Average input test ./a.out TEMP-HUM TEMP-HUM-CO2 RAIN-WEATHER-SUN SOMETHING-ELSE-IRRELEVANT-YES */
