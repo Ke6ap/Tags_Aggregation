@@ -175,7 +175,6 @@ int hammingDistance(char str1[], char str2[]){
             count++;
         i++;
     }
-    count += abs((int)strlen(str1)-(int)strlen(str2));
     return count;
 }
 
