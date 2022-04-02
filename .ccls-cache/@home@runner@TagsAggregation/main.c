@@ -78,6 +78,22 @@ int heightoftree(struct node *root){
         }
     }
 }
+
+int height_of_binary_tree(struct node *node){
+  if(node == NULL)
+    return 0;
+  else {
+    int left_side;
+    int right_side;
+    left_side = height_of_binary_tree(node -> left);
+    right_side = height_of_binary_tree(node -> right);
+    
+    if(left_side > right_side){
+      return left_side + 1;
+    }else
+      return right_side + 1;
+  }
+}
 /* Function to print all the nodes left to right of the current level */
 void currentlevel(struct node *root, int level){
     
@@ -175,6 +191,8 @@ int hammingDistance(char str1[], char str2[]){
             count++;
         i++;
     }
+    //in case of not equeal lengths
+    count += abs((int)strlen(str1)-(int)strlen(str2));
     return count;
 }
 
@@ -245,6 +263,8 @@ char *trim(char *str,char ch){
   return str;
 }
 
+
+
 void printInorder(struct node* node)
 {
     if (node == NULL)
@@ -284,21 +304,25 @@ int main(int argc, char **argv) {
   char tags_table[argc-1][(int)maximum_tag_length+1];
 
   /* initialize aaray with # and add null terminator to finish the string */
-  for (int i = 0; i < argc-1; ++i){
-    for(int j=0;j<(int)maximum_tag_length;++j){
-      tags_table[i][j] = '_';
-    }
+  // for (int i = 0; i < argc-1; ++i){
+  //   for(int j=0;j<(int)maximum_tag_length;++j){
+  //     tags_table[i][j] = '_';
+  //   }
     
-    //insert string terminating character 
-    tags_table[i][(int)maximum_tag_length] = '\0';
-  }
+  //   //insert string terminating character 
+  //   tags_table[i][(int)maximum_tag_length] = '\0';
+  // }
 
   /* change # with the aactual string characters */
   /* ayto de tha xreiastei na xanaginei epeidh tropopoihsa to hamming distance na pianei th diafora twn strings se methethos kai na th prosthetei sto teliko count */
+  
   for (int i = 0; i < argc-1; ++i){
+    int final_char = maximum_tag_length;
     for (int j =0; j <(int)strlen(argv[i+1]);++j){
       tags_table[i][j] = argv[i+1][j];
+      final_char = j;
     }
+    tags_table[i][final_char+1] = '\0';
     if ( i==0 ){
       insertAtBeginning(&head,i,tags_table[i]); 
     }else{
@@ -498,7 +522,7 @@ int main(int argc, char **argv) {
   }
   
   //printInorder(tree_head);
-  int height = heightoftree(tree_head);
+  int height = height_of_binary_tree(tree_head);
 
   //ektypwnoume to teliko dentro
   for(int i = 1; i <= height; i++){
