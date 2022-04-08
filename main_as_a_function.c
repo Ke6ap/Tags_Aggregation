@@ -444,6 +444,8 @@ struct node* not_main(int argc, char **argv) {
 
     //to node poy tha einai o pateras tou zeugariou
     struct node* parent_of_childs = createNode(aggregated_tags);
+    int first_tag_exists = search(tree_head,first_tag_string);
+    int second_tag_exists = search(tree_head,temp_second_tag_string);
 
                       /*Tree formation*/
     if(tree_head == NULL){
@@ -452,7 +454,10 @@ struct node* not_main(int argc, char **argv) {
         insertLeft(parent_of_childs,temp_second_tag_string);
         //printf("%s \n",parent_of_childs->left->tags);
         tree_head = parent_of_childs;
-    }else if(search(tree_head,first_tag_string)){
+    }else if(first_tag_exists && second_tag_exists){
+      /*do nothing if both strings already exist */
+      
+    }else if(first_tag_exists){
       /* An einai to first string anagkastika den einai to deytero opote to dhmiourgoume kai to bazoume aristera enw vazoume to upoloipo dentro dexia */
       
       insertLeft(parent_of_childs,temp_second_tag_string);
@@ -461,7 +466,7 @@ struct node* not_main(int argc, char **argv) {
       //printf("%s \n",parent_of_childs->right->tags);
       tree_head = parent_of_childs;
 
-    }else if(search(tree_head,temp_second_tag_string)){
+    }else if(second_tag_exists){
       
       insertLeft(parent_of_childs,first_tag_string);
       //printf("%s | ",parent_of_childs->left->tags);
@@ -579,11 +584,13 @@ struct node* not_main(int argc, char **argv) {
 int main(void){
 
   char *strings[] = {
-      "iamgarbagevalue","TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","SOMETHING-ELSE-IRRELEVANT-YES",
+      "iamgarbagevalue","TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","LIGHT-ENERGY","TEMP-HUM","TEMP-HUM",/*4*//*"DUST-MOLD-HUM","WIND-ENERGY","CO2-H2O-BR","SOUND-WIND",*//*8*//*32*/
   };
 
+  // "PRESSURE-HEAT-DUST","HUM-TEMP-WIND","TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","LIGHT-ENERGY","DUST-MOLD-HUM","WIND-ENERGY","CO2-H2O-BR","SOUND-WIND","TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","LIGHT-ENERGY",/*16*/"TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","LIGHT-ENERGY","DUST-MOLD-HUM","WIND-ENERGY","CO2-H2O-BR","SOUND-WIND","PRESSURE-HEAT-DUST","HUM-TEMP-WIND","TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","LIGHT-ENERGY","DUST-MOLD-HUM","WIND-ENERGY","CO2-H2O-BR","SOUND-WIND","TEMP-HUM","TEMP-HUM-CO2","RAIN-WEATHER-SUN","LIGHT-ENERGY"
+
   struct node* root = NULL;
-  root = not_main(5,strings);
+  root = not_main(7,strings);
 
   //printf("%s",root->tags);
 
@@ -595,6 +602,8 @@ int main(void){
         currentlevel(root,i);
         printf("\n");
   }
+
+  //printf("\nroot ->%s\n",root->tags);
   
   return 0;
 }

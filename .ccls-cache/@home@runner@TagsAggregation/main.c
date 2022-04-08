@@ -458,6 +458,8 @@ int main(int argc, char **argv) {
 
     //to node poy tha einai o pateras tou zeugariou
     struct node* parent_of_childs = createNode(aggregated_tags);
+    int first_tag_exists = search(tree_head,first_tag_string);
+    int second_tag_exists = search(tree_head,temp_second_tag_string);
 
                       /*Tree formation*/
     if(tree_head == NULL){
@@ -466,7 +468,10 @@ int main(int argc, char **argv) {
         insertLeft(parent_of_childs,temp_second_tag_string);
         //printf("%s \n",parent_of_childs->left->tags);
         tree_head = parent_of_childs;
-    }else if(search(tree_head,first_tag_string)){
+    }else if(first_tag_exists && second_tag_exists){
+      /*do nothing if both strings already exist */
+      
+    }else if(first_tag_exists){
       /* An einai to first string anagkastika den einai to deytero opote to dhmiourgoume kai to bazoume aristera enw vazoume to upoloipo dentro dexia */
       
       insertLeft(parent_of_childs,temp_second_tag_string);
@@ -475,7 +480,7 @@ int main(int argc, char **argv) {
       //printf("%s \n",parent_of_childs->right->tags);
       tree_head = parent_of_childs;
 
-    }else if(search(tree_head,temp_second_tag_string)){
+    }else if(second_tag_exists){
       
       insertLeft(parent_of_childs,first_tag_string);
       //printf("%s | ",parent_of_childs->left->tags);
